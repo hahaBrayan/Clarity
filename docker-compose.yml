@@ -1,0 +1,15 @@
+services:
+    ui:
+        container_name: medical-ui
+        build: ./medical-ui
+        ports:
+            - '4200:4200'
+        links:
+            - api
+    api:
+        container_name: medical-api
+        build: ./api
+        ports:
+            - '5000:5000'
+networks:
+    default:

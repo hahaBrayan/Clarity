@@ -1,0 +1,80 @@
+<form [formGroup]="searchForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Enter a medication:</mat-label>
+      <input matInput formControlName="name" maxlength="256" placeholder="Ibuprofen, Omeprazole, etc...">
+    </mat-form-field>
+    <br/>
+    <mat-form-field appearance="fill">
+      <mat-label>Form:</mat-label>
+      <mat-select>
+        <mat-option *ngFor="let form of medicationForms" [value]="form">
+          {{form}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br/>
+    <mat-form-field appearance="fill">
+      <mat-label>Dosage:</mat-label>
+      <input matInput formControlName="dosage">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Units:</mat-label>
+      <mat-select>
+        <mat-option *ngFor="let unit of units" [value]="unit">
+          {{unit}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Zip Code</mat-label>
+      <input matInput formControlName="zipCode" maxlength="5">
+    </mat-form-field>
+    <br/>
+    <mat-form-field appearance="fill">
+      <mat-label>Quantity</mat-label>
+      <input matInput formControlName="quantity">
+    </mat-form-field>
+    <br/>
+      <mat-label>Generic?</mat-label>
+      <mat-radio-group formControlName="isGeneric">
+        <mat-radio-button value="True">Yes</mat-radio-button>
+         <mat-radio-button value="False">No</mat-radio-button>
+      </mat-radio-group>
+    <br/>
+    <mat-form-field appearance="fill">
+      <mat-label>Current price:</mat-label>
+      <input matInput formControlName="payingPrice">
+    </mat-form-field>
+  </form>
+  <div>
+    <form [formGroup]="uploadForm" (ngSubmit)="onCsvSubmit()">      
+      <div>
+        <input type="file" name="csvFile" (change)="onFileSelect($event)" />
+      </div>
+      <div>
+        <button type="submit">Upload</button>
+      </div>
+    </form>
+  </div>
+<button mat-raised-button color="primary" (click)="searchTerm()" [disabled]="!searchForm.valid">Search for term</button>
+<div *ngIf="isSearching">
+  Fetching results...
+</div>
+<div *ngIf="searchResults">
+  <mat-grid-list cols="1" rowHeight="7:1">
+    <mat-grid-tile *ngIf="totalSaved > 0">
+      You saved a total of ${{totalSaved | number : '1.2-2'}}!
+    </mat-grid-tile>
+    <ng-container *ngFor="let res of searchResults.medications">
+      <mat-grid-tile *ngIf="res.price_data && res.price_data.prices">
+          <ul>
+            <li>{{res.name}} {{res.dosage}} {{res.form}}</li>
+            <li>Price: ${{res.price_data.prices[0] | number : '1.2-2' }}</li>
+            <li>Count: {{res.qty}}</li>
+            <li>From {{res.price_data.name}} at {{res.price_data.pharmacy.Address.Address1}}</li>
+            <li *ngIf="res.price_data.save_amount > 0">Savings: ${{res.price_data.save_amount | number : '1.2-2'}}</li>
+          </ul>
+      </mat-grid-tile>
+  </ng-container>
+  </mat-grid-list>
+</div>
